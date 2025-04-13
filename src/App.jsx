@@ -1,35 +1,73 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useState } from 'react';
+import './App.css';
+import Header from './components/ui/Header';
+import CVForm from './components/CVForm';
+import CVPreview from './components/CVPreview';
 
 function App() {
-  const [count, setCount] = useState(0)
+  // Main application state
+  const [cvData, setCvData] = useState({
+    generalInfo: {
+      name: '',
+      email: '',
+      phone: '',
+      location: ''
+    },
+    education: [
+      { id: Date.now(), school: '', major: '', graduationDate: '' }
+    ],
+    experience: [
+      { 
+        id: Date.now() + 1, 
+        company: '', 
+        position: '', 
+        startDate: '', 
+        endDate: '', 
+        responsibilities: '' 
+      }
+    ]
+  });
+  
+  // Editing mode state
+  const [isEditing, setIsEditing] = useState(true);
+  
+  // Handle saving CV data
+  const handleSave = (data) => {
+    setCvData(data);
+    setIsEditing(false);
+  };
+  
+  // Toggle between edit and preview modes
+  const toggleMode = () => {
+    setIsEditing(!isEditing);
+  };
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <div className="app">
+      <Header 
+        title="CV Builder" 
+        isEditing={isEditing} 
+        onToggleMode={toggleMode} 
+      />
+      
+      <main className="app-content">
+        {isEditing ? (
+          <CVForm 
+            onSave={handleSave} 
+            initialData={cvData} 
+            isEditing={isEditing} 
+            setIsEditing={setIsEditing} 
+          />
+        ) : (
+          <CVPreview data={cvData} />
+        )}
+      </main>
+      
+      <footer className="app-footer">
+        <p>CV Builder Application | © {new Date().getFullYear()}</p>
+      </footer>
+    </div>
+  );
 }
 
-export default App
+export default App;
